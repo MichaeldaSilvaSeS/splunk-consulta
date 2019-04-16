@@ -1,0 +1,68 @@
+<form>
+  <label>Corretora_Assessoria</label>
+  <search id="infos">
+    <query>index="index_requisicoes_v1" sourcetype="csv" | table CorrelationID Method URL Payload HttpStatus | eval Aplicacao=replace(URL,"(?!\/efetivacoes|\/ofertas|\/simulacoes)\/.*","") | lookup status.csv Status as HttpStatus OUTPUT Descricao | sort Aplicacao, HttpStatus | spath input=Payload output=PayloadJsonIdOferta path=data{}.id_oferta | fillnull PayloadJsonIdOferta | spath input=Payload output=PayloadJsonIdSimulacao path=data.id_simulacao | fillnull PayloadJsonIdSimulacao | mvexpand PayloadJsonIdOferta | search Aplicacao IN ($AplicacaoSelecionda$)</query>
+    <earliest>0</earliest>
+    <latest></latest>
+  </search>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="multiselect" token="AplicacaoSelecionda" searchWhenChanged="true">
+      <label>Aplicacao</label>
+      <fieldForLabel>Aplicacao</fieldForLabel>
+      <fieldForValue>Aplicacao</fieldForValue>
+      <search>
+        <query>index="index_requisicoes_v1" sourcetype="csv" | table URL | eval Aplicacao=replace(URL,"(?!\/efetivacoes|\/ofertas|\/simulacoes)\/.*","") | stats count by Aplicacao</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <choice value="*">All</choice>
+      <initialValue>*</initialValue>
+      <default>*</default>
+      <delimiter> ,</delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Requisicoes por aplicacao</title>
+        <search base="infos">
+          <query> | stats count by Aplicacao</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Status de resposta</title>
+        <search base="infos">
+          <query> | chart count(HttpStatus) by Aplicacao, Descricao</query>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Table</title>
+        <search base="infos">
+          <query> | table Aplicacao, Descricao</query>
+        </search>
+        <option name="drilldown">row</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</form>
