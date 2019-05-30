@@ -1,0 +1,138 @@
+<html>
+<body>
+	
+	<div id="tela">
+		
+	</div>
+	
+	
+	
+	<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+	<script type="text/javascript">
+		var response = {
+			seccoes: [
+				{
+					id_formato: 1,
+					conteudos: [
+						{
+							id_formato: 2,
+							conteudo: "Nome produto"
+						},
+						{
+							id_formato: 3,
+							conteudo: "Vida modular"
+						},
+						{
+							id_formato: 2,
+							conteudo: "Numero da proposta"
+						},
+						{
+							id_formato: 3,
+							conteudo: "67559884"
+						}
+					]
+				},
+				{
+					id_formato: 4,
+					conteudos: [
+						{
+							id_formato: 3,
+							conteudo: "Coberturas"
+						},
+						{
+							id_formato: 2,
+							conteudo: "Quebra de ossos"
+						},
+						{
+							id_formato: 3,
+							conteudo: "10.0000,00"
+						}
+					]
+				},
+				{
+					id_formato: 5,
+					conteudos: [
+						{
+							id_formato: 3,
+							conteudo: "Assistencias"
+						},
+						{
+							id_formato: 2,
+							conteudo: "Auxilio funeral"
+						},
+						{
+							id_formato: 3,
+							conteudo: "2.0000,00"
+						}
+					]
+				},
+				{
+					id_formato: 6,
+					conteudos: [
+						{
+							id_formato: 2,
+							conteudo: "Numero SUSEP"
+						},
+						{
+							id_formato: 7,
+							conteudo: "1111.0000.222/0000-1"
+						},
+						{
+							id_formato: 7,
+							conteudo: "1111.0000.222/0000-1"
+						},
+					]
+				}
+			]
+		};
+		
+		var formatos = [
+			{
+				id_formato: 1,
+				template: '<div style="background-color: lightblue">$conteudo</div>'
+			},
+			{
+				id_formato: 2,
+				template: '<b>$conteudo :</b>'
+			},
+			{
+				id_formato: 3,
+				template: '<i> $conteudo</i> </br>'
+			},
+			{
+				id_formato: 4,
+				template: '<div style="background-color: lightgray">$conteudo</div>'
+			},
+			{
+				id_formato: 5,
+				template: '<div style="background-color: lightgreen">$conteudo</div>'
+			},
+			{
+				id_formato: 6,
+				template: '<div style="background-color: red">$conteudo</div>'
+			},
+			{
+				id_formato: 7,
+				template: '<i> $conteudo </i>'
+			}
+		];
+		
+		var buscaFormato = function(id){
+			return formatos.find( f => f.id_formato == id);
+		};
+	
+		$(document).ready(function(){
+			$(response.seccoes).each(function(index, seccao){
+				var seccaoConteudo = '';
+				$(seccao.conteudos).each(function(i,conteudo){
+					var conteudoFormato = buscaFormato(conteudo.id_formato);
+					seccaoConteudo = seccaoConteudo + conteudoFormato.template.replace('$conteudo',conteudo.conteudo);
+				});
+				
+				var seccaoFormato = buscaFormato(seccao.id_formato);
+				$('#tela').append( seccaoFormato.template.replace('$conteudo',seccaoConteudo) );
+			});
+		});
+	</script>
+</body>
+</html>
